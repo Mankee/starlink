@@ -74,13 +74,11 @@ export function addSatellites(group: THREE.Group, satellites: { x: number, y: nu
   return points;
 }
 
-export function addUsers(scene: THREE.Scene, users: { x: number, y: number, z: number }[]) {
+export function addUsers(group: THREE.Group, users: { x: number, y: number, z: number }[]) {
   const vertices: number[] = [];
-  const rotation: number[] = [];
   users.forEach(({ x, y, z}) => {
     const vector = new THREE.Vector3(x, y, z);
     vertices.push(vector.x / scaler, vector.z / scaler, vector.y / scaler)
-    rotation.push(vector.x / scaler, 0.0002, vector.y / scaler)
   });
 
   const geometry = new THREE.BufferGeometry();
@@ -94,7 +92,7 @@ export function addUsers(scene: THREE.Scene, users: { x: number, y: number, z: n
     sizeAttenuation: true,
   });
   const points = new THREE.Points(geometry, material);
-  scene.add(points);
+  group.add(points);
   return points;
 }
 
@@ -107,12 +105,6 @@ export const addAxesHelper = (scene: THREE.Scene) => {
 export const addEarth = (group: THREE.Group) => {
   const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS, GEOMETRY_DETAIL);
   const loader = new THREE.TextureLoader();
-  // const earthMaterial = new THREE.MeshPhongMaterial( {
-  //   map: textureLoader.load( 'textures/planets/earth_atmos_2048.jpg' ),
-  //   specularMap: textureLoader.load( 'textures/planets/earth_specular_2048.jpg' ),
-  //   normalMap: textureLoader.load( 'textures/planets/earth_normal_2048.jpg' ),
-  //   normalScale: new THREE.Vector2( 0.85, 0.85 )
-  // } );
 
   const earthMaterial = new THREE.MeshPhongMaterial({
     specular: 0x333333,

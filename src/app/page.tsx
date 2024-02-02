@@ -2,8 +2,8 @@
 
 import * as THREE from 'three';
 import React, { useEffect, useState, useRef } from 'react';
-import satelliteData from '../../public/05_satellites.json'
-// import satelliteData from '../../public/08_satellites.json'
+import data from '../../public/05_data.json'
+// import data from '../../public/08_data.json'
 
 // @ts-ignore
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -57,8 +57,9 @@ export default function Home() {
     const earth = addEarth(group)
     const cityLights = addCityLights(group);
     const clouds = addClouds(group);
-    const glow = addGlow(group)
-    const satellites = addSatellites(group, satelliteData)
+    const glow = addGlow(group);
+    const satellites = addSatellites(group, data.satellites);
+    const users = addUsers(group, data.users);
 
     // scene objects
     const stars = getStarfield({ numStars: 2000 });
@@ -74,6 +75,7 @@ export default function Home() {
       requestAnimationFrame(animate);
       earth.rotation.y += 0.0002;
       satellites.rotation.y += 0.0002;
+      users.rotation.y += 0.0002;
       cityLights.rotation.y += 0.0002;
       clouds.rotation.y += 0.00023;
       glow.rotation.y += 0.0002;
