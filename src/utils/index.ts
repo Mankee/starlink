@@ -88,9 +88,9 @@ export const addEarth = (group: THREE.Group) => {
   group.rotation.y = -23.4 * Math.PI / 180;
 
   const earthMaterial = new THREE.MeshPhongMaterial({
-    map: loader.load("/earthmap10k.jpg"),
-    specularMap: loader.load("/earthspec10k.jpg"),
-    bumpMap: loader.load("/earthbump10k.jpg"),
+    map: loader.load("/earthmap4k.jpg"),
+    specularMap: loader.load("/earthspec4k.jpg"),
+    bumpMap: loader.load("/earthbump4k.jpg"),
     bumpScale: 0.04,
   });
   const earthMesh = new THREE.Mesh(geometry, earthMaterial);
@@ -103,7 +103,7 @@ export const addCityLights = (group: THREE.Group) => {
   const loader = new THREE.TextureLoader();
 
   const lightsMaterial = new THREE.MeshBasicMaterial({
-    map: loader.load("/earthlights10k.jpg"),
+    map: loader.load("/earthlights4k.jpg"),
     blending: THREE.AdditiveBlending,
     opacity: .35
   });
