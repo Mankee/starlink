@@ -51,7 +51,7 @@ export default function Home() {
     scene.add( axesHelper );
 
     const group = new THREE.Group();
-    group.rotation.z = -23.4 * Math.PI / 180;
+    group.rotation.z = -23.5 * Math.PI / 180;
 
     // grouped objects
     const earth = addEarth(group)
