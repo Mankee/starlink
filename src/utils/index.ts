@@ -82,7 +82,7 @@ export function addUsers(scene: THREE.Scene, users: { x: number, y: number, z: n
   users.forEach(({ x, y, z}) => {
     const vector = new THREE.Vector3(x, y, z);
     vertices.push(vector.x / scaler, vector.z / scaler, vector.y / scaler)
-    rotation.push(vector.x / scaler, 0.0004, vector.y / scaler)
+    rotation.push(vector.x / scaler, 0.0002, vector.y / scaler)
   });
 
   const geometry = new THREE.BufferGeometry();

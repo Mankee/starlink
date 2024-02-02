@@ -72,12 +72,12 @@ export default function Home() {
 
     function animate() {
       requestAnimationFrame(animate);
-      earth.rotation.y += 0.0004;
-      satellites.rotation.y += 0.0004;
-      cityLights.rotation.y += 0.0004;
-      clouds.rotation.y += 0.00046;
-      glow.rotation.y += 0.0004;
-      stars.rotation.y -= 0.00004;
+      earth.rotation.y += 0.0002;
+      satellites.rotation.y += 0.0002;
+      cityLights.rotation.y += 0.0002;
+      clouds.rotation.y += 0.00023;
+      glow.rotation.y += 0.0002;
+      stars.rotation.y -= 0.00002;
       renderer.render(scene, camera);
     }
 
