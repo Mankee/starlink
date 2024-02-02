@@ -2,8 +2,8 @@
 
 import * as THREE from 'three';
 import React, { useEffect, useState, useRef } from 'react';
-// import satelliteData from '../../public/05_satellites.json'
-import satelliteData from '../../public/08_satellites.json'
+import satelliteData from '../../public/05_satellites.json'
+// import satelliteData from '../../public/08_satellites.json'
 
 // @ts-ignore
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";

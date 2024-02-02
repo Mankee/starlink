@@ -2,6 +2,7 @@ import * as THREE from "three";
 
 const scaler = 2500
 export const EARTH_RADIUS = 6378.1 / scaler; // ish
+export const GEOMETRY_DETAIL = 16
 
 export const getCoordinatesFromLatLng = function(latitude: number, longitude: number){
   const x = (EARTH_RADIUS * Math.cos(latitude) * Math.cos(longitude));
@@ -82,12 +83,22 @@ export const addAxesHelper = (scene: THREE.Scene) => {
 }
 
 export const addEarth = (group: THREE.Group) => {
-  const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS, 12);
+  const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS, GEOMETRY_DETAIL);
   const loader = new THREE.TextureLoader();
 
   group.rotation.y = -23.4 * Math.PI / 180;
 
+  // const earthMaterial = new THREE.MeshPhongMaterial( {
+  //   map: textureLoader.load( 'textures/planets/earth_atmos_2048.jpg' ),
+  //   specularMap: textureLoader.load( 'textures/planets/earth_specular_2048.jpg' ),
+  //   normalMap: textureLoader.load( 'textures/planets/earth_normal_2048.jpg' ),
+  //   normalScale: new THREE.Vector2( 0.85, 0.85 )
+  // } );
+
   const earthMaterial = new THREE.MeshPhongMaterial({
+    specular: 0x333333,
+    shininess: 5,
+    normalMap: loader.load("/earthlights10k.jpg"),
     map: loader.load("/earthmap10k.jpg"),
     specularMap: loader.load("/earthspec10k.jpg"),
     bumpMap: loader.load("/earthbump10k.jpg"),
@@ -99,13 +110,13 @@ export const addEarth = (group: THREE.Group) => {
 }
 
 export const addCityLights = (group: THREE.Group) => {
-  const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS, 12);
+  const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS, GEOMETRY_DETAIL);
   const loader = new THREE.TextureLoader();
 
   const lightsMaterial = new THREE.MeshBasicMaterial({
     map: loader.load("/earthlights10k.jpg"),
     blending: THREE.AdditiveBlending,
-    opacity: .35
+    opacity: .2
   });
   const lightsMesh = new THREE.Mesh(geometry, lightsMaterial);
   group.add(lightsMesh);
@@ -120,7 +131,7 @@ export const addClouds = (group: THREE.Group) => {
     map: loader.load("/earthcloudmap.jpg"),
     transparent: true,
     blending: THREE.AdditiveBlending,
-    opacity: 0.35,
+    opacity: 0.1,
     alphaMap: loader.load('/earthcloudmaptrans.jpg'),
   });
   const cloudsMesh = new THREE.Mesh(geometry, cloudsMat);
@@ -130,7 +141,7 @@ export const addClouds = (group: THREE.Group) => {
 }
 
 export const addGlow = (group: THREE.Group) => {
-  const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS, 12);
+  const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS, GEOMETRY_DETAIL);
 
   const fresnelMat = getFresnelMat();
   const glowMesh = new THREE.Mesh(geometry, fresnelMat);
