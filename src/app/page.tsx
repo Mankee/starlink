@@ -14,6 +14,7 @@ import {
   getStarfield,
   getFresnelMat,
   addSatellites,
+  addUsers,
   addEarth,
   addClouds,
   addGlow,
@@ -51,23 +52,22 @@ export default function Home() {
 
     const group = new THREE.Group();
     group.rotation.y = -23.4 * Math.PI / 180;
-    scene.add(group);
 
-    const detail = 12;
-    const loader = new THREE.TextureLoader();
-    const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS, detail);
-
+    // grouped objects
     const earth = addEarth(group)
-    const satellites = addSatellites(scene, satelliteData)
     const cityLights = addCityLights(group);
     const clouds = addClouds(group);
     const glow = addGlow(group)
+    const satellites = addSatellites(scene, satelliteData)
 
-    const stars = getStarfield({numStars: 2000});
+    // scene objects
+    const stars = getStarfield({ numStars: 2000 });
+
+    scene.add(group);
     scene.add(stars);
 
     const sunLight = new THREE.DirectionalLight(0xffffff, 1);
-    sunLight.position.set(-2, 0.5, 1.5);
+    sunLight.position.set(-1, -.5, 0);
     scene.add(sunLight);
 
     function animate() {

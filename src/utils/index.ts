@@ -58,7 +58,7 @@ export function addSatellites(scene: THREE.Scene, satellites: { x: number, y: nu
   satellites.forEach(({ x, y, z}) => {
     const vector = new THREE.Vector3(x, y, z);
     vertices.push(vector.x / scaler, vector.z / scaler, vector.y / scaler)
-    rotation.push(vector.x / scaler, 0.0004, vector.y / scaler)
+    rotation.push(vector.x / scaler, vector.z / scaler, vector.y / scaler)
   });
 
   const geometry = new THREE.BufferGeometry();
@@ -76,6 +76,30 @@ export function addSatellites(scene: THREE.Scene, satellites: { x: number, y: nu
   return points;
 }
 
+export function addUsers(scene: THREE.Scene, users: { x: number, y: number, z: number }[]) {
+  const vertices: number[] = [];
+  const rotation: number[] = [];
+  users.forEach(({ x, y, z}) => {
+    const vector = new THREE.Vector3(x, y, z);
+    vertices.push(vector.x / scaler, vector.z / scaler, vector.y / scaler)
+    rotation.push(vector.x / scaler, 0.0004, vector.y / scaler)
+  });
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+  geometry.setAttribute("rotation", new THREE.Float32BufferAttribute(vertices, 3));
+
+  const material = new THREE.PointsMaterial({
+    size: .025,
+    color: new THREE.Color('red'),
+    blending: THREE.AdditiveBlending,
+    sizeAttenuation: true,
+  });
+  const points = new THREE.Points(geometry, material);
+  scene.add(points);
+  return points;
+}
+
 export const addAxesHelper = (scene: THREE.Scene) => {
   const axesHelper = new THREE.AxesHelper( 4 );
   axesHelper.layers.enableAll();
@@ -85,9 +109,6 @@ export const addAxesHelper = (scene: THREE.Scene) => {
 export const addEarth = (group: THREE.Group) => {
   const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS, GEOMETRY_DETAIL);
   const loader = new THREE.TextureLoader();
-
-  group.rotation.y = -23.4 * Math.PI / 180;
-
   // const earthMaterial = new THREE.MeshPhongMaterial( {
   //   map: textureLoader.load( 'textures/planets/earth_atmos_2048.jpg' ),
   //   specularMap: textureLoader.load( 'textures/planets/earth_specular_2048.jpg' ),
@@ -98,7 +119,6 @@ export const addEarth = (group: THREE.Group) => {
   const earthMaterial = new THREE.MeshPhongMaterial({
     specular: 0x333333,
     shininess: 5,
-    normalMap: loader.load("/earthlights10k.jpg"),
     map: loader.load("/earthmap10k.jpg"),
     specularMap: loader.load("/earthspec10k.jpg"),
     bumpMap: loader.load("/earthbump10k.jpg"),
@@ -131,7 +151,7 @@ export const addClouds = (group: THREE.Group) => {
     map: loader.load("/earthcloudmap.jpg"),
     transparent: true,
     blending: THREE.AdditiveBlending,
-    opacity: 0.1,
+    opacity: 0.25,
     alphaMap: loader.load('/earthcloudmaptrans.jpg'),
   });
   const cloudsMesh = new THREE.Mesh(geometry, cloudsMat);
