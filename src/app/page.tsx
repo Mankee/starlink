@@ -51,14 +51,14 @@ export default function Home() {
     scene.add( axesHelper );
 
     const group = new THREE.Group();
-    group.rotation.y = -23.4 * Math.PI / 180;
+    group.rotation.z = -23.4 * Math.PI / 180;
 
     // grouped objects
     const earth = addEarth(group)
     const cityLights = addCityLights(group);
     const clouds = addClouds(group);
     const glow = addGlow(group)
-    const satellites = addSatellites(scene, satelliteData)
+    const satellites = addSatellites(group, satelliteData)
 
     // scene objects
     const stars = getStarfield({ numStars: 2000 });
@@ -67,7 +67,7 @@ export default function Home() {
     scene.add(stars);
 
     const sunLight = new THREE.DirectionalLight(0xffffff, 1);
-    sunLight.position.set(-1, -.5, 0);
+    sunLight.position.set(1, 0, 0);
     scene.add(sunLight);
 
     function animate() {

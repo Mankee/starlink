@@ -52,13 +52,11 @@ export function getStarfield({ numStars = 500 } = {}) {
   return points;
 }
 
-export function addSatellites(scene: THREE.Scene, satellites: { x: number, y: number, z: number }[]) {
+export function addSatellites(group: THREE.Group, satellites: { x: number, y: number, z: number }[]) {
   const vertices: number[] = [];
-  const rotation: number[] = [];
   satellites.forEach(({ x, y, z}) => {
     const vector = new THREE.Vector3(x, y, z);
     vertices.push(vector.x / scaler, vector.z / scaler, vector.y / scaler)
-    rotation.push(vector.x / scaler, vector.z / scaler, vector.y / scaler)
   });
 
   const geometry = new THREE.BufferGeometry();
@@ -72,7 +70,7 @@ export function addSatellites(scene: THREE.Scene, satellites: { x: number, y: nu
     sizeAttenuation: true,
   });
   const points = new THREE.Points(geometry, material);
-  scene.add(points);
+  group.add(points);
   return points;
 }
 
@@ -125,6 +123,7 @@ export const addEarth = (group: THREE.Group) => {
     bumpScale: 0.04,
   });
   const earthMesh = new THREE.Mesh(geometry, earthMaterial);
+
   group.add(earthMesh);
   return earthMesh
 }
