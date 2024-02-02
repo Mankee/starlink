@@ -12,7 +12,7 @@ import data from '../../public/05_data.json'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 import {
-  getStarfield,
+  addStarField,
   addSatellites,
   addUsers,
   addEarth,
@@ -20,7 +20,10 @@ import {
   addGlow,
   addCityLights,
   addSunlight,
-  addAxesHelper
+  addAxesHelper,
+  EARTH_RADIUS,
+  SCALER,
+  addPointLabels
 } from "../utils";
 
 export default function Home() {
@@ -30,6 +33,7 @@ export default function Home() {
     if (!canvasRef.current) return;
 
     const scene = new THREE.Scene();
+    scene.layers.enableAll()
 
     // Camera
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -45,10 +49,11 @@ export default function Home() {
     const glow = addGlow(group);
     const satellites = addSatellites(group, data.satellites);
     const users = addUsers(group, data.users);
+    const satelliteLabels = addPointLabels(earth, camera, data.satellites)
 
     // scene objects
     const axes = addAxesHelper(scene)
-    const stars = getStarfield(scene, { numStars: 2000 });
+    const stars = addStarField(scene, { numStars: 2000 });
     const sunLight = addSunlight(scene);
 
     scene.add(group);
@@ -69,6 +74,7 @@ export default function Home() {
 
     function animate() {
       requestAnimationFrame(animate);
+      satelliteLabels.forEach((label: any) => label.userData.trackVisibility());
       earth.rotation.y += 0.0002;
       satellites.rotation.y += 0.0002;
       users.rotation.y += 0.0002;
@@ -77,7 +83,7 @@ export default function Home() {
       glow.rotation.y += 0.0002;
       stars.rotation.y -= 0.00002;
       renderer.render(scene, camera);
-      labelRenderer.render( scene, camera );
+      labelRenderer.render(scene, camera);
     }
 
     animate();

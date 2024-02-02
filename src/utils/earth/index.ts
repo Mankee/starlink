@@ -13,21 +13,8 @@ export const addEarth = (group: THREE.Group) => {
     bumpMap: loader.load("/earthbump10k.jpg"),
     bumpScale: 0.04,
   });
-  // @ts-ignore
-  material.map.colorSpace = THREE.SRGBColorSpace;
+
   const earth = new THREE.Mesh(geometry, material);
-  earth.layers.enableAll();
-
-  const earthDiv = document.createElement( 'div' );
-  earthDiv.className = 'label';
-  earthDiv.textContent = 'Earth';
-  earthDiv.style.backgroundColor = 'transparent';
-
-  const earthLabel = new CSS2DObject( earthDiv );
-  earthLabel.position.set( 1.5 * EARTH_RADIUS, 0, 0);
-  earthLabel.center.set( 0, 1 );
-  earth.add( earthLabel );
-  earthLabel.layers.set( 0 );
   group.add(earth);
   return earth
 }

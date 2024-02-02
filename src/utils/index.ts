@@ -1,19 +1,16 @@
 import * as THREE from "three";
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
-const scaler = 2500
-export const EARTH_RADIUS = 6378.1 / scaler; // ish
+export const SCALER = 2500
+export const EARTH_RADIUS = 6378.1 / SCALER; // ish
 export const GEOMETRY_DETAIL = 16
 
 export { addEarth } from './earth';
+export { addSatellites } from './satellites';
+export { addUsers } from './users';
 
-export const getCoordinatesFromLatLng = function(latitude: number, longitude: number){
-  const x = (EARTH_RADIUS * Math.cos(latitude) * Math.cos(longitude));
-  const y = (EARTH_RADIUS * Math.cos(latitude) * Math.sin(longitude));
-  const z = (EARTH_RADIUS * Math.sin(latitude));
-  return { x, y, z };
-}
-
-export function getStarfield(scene: THREE.Scene, { numStars = 500 } = {}) {
+export function addStarField(scene: THREE.Scene, { numStars = 500 } = {}) {
   function randomSpherePoint() {
     const radius = Math.random() * 25 + 25;
     const u = Math.random();
@@ -52,51 +49,6 @@ export function getStarfield(scene: THREE.Scene, { numStars = 500 } = {}) {
   });
   const points = new THREE.Points(geo, mat);
   scene.add(points);
-  return points;
-}
-
-export function addSatellites(group: THREE.Group, satellites: { x: number, y: number, z: number }[]) {
-  const vertices: number[] = [];
-  satellites.forEach(({ x, y, z}) => {
-    const vector = new THREE.Vector3(x, y, z);
-    vertices.push(vector.x / scaler, vector.z / scaler, vector.y / scaler);
-  });
-
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-  geometry.setAttribute("rotation", new THREE.Float32BufferAttribute(vertices, 3));
-
-  const material = new THREE.PointsMaterial({
-    size: .025,
-    color: new THREE.Color('green'),
-    blending: THREE.AdditiveBlending,
-    sizeAttenuation: true,
-  });
-  const points = new THREE.Points(geometry, material);
-  group.add(points);
-  return points;
-}
-
-export function addUsers(group: THREE.Group, users: { x: number, y: number, z: number }[]) {
-  const portland = getCoordinatesFromLatLng(45.512230, -122.658722)
-  const vertices: number[] = [portland.x / scaler, portland.y / scaler, portland.z];
-  users.forEach(({ x, y, z}) => {
-    const vector = new THREE.Vector3(x, y, z);
-    vertices.push(vector.x / scaler, vector.z / scaler, vector.y / scaler)
-  });
-
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-  geometry.setAttribute("rotation", new THREE.Float32BufferAttribute(vertices, 3));
-
-  const material = new THREE.PointsMaterial({
-    size: .025,
-    color: new THREE.Color('red'),
-    blending: THREE.AdditiveBlending,
-    sizeAttenuation: true,
-  });
-  const points = new THREE.Points(geometry, material);
-  group.add(points);
   return points;
 }
 
@@ -203,3 +155,41 @@ function getFresnelMat({rimHex = 0x0088ff, facingHex = 0x000000} = {}) {
   return fresnelMat;
 }
 export { getFresnelMat };
+
+// https://github.com/gre/smoothstep/blob/master/index.js
+const smoothstep = (min: number, max: number, value: number) => {
+  var x = Math.max(0, Math.min(1, (value-min)/(max-min)));
+  return x*x*(3 - 2*x);
+};
+
+export const addPointLabels = (earth: THREE.Mesh, camera: THREE.Camera, satellites: any) => {
+  return satellites.map((satellite: any) => {
+    const element = document.createElement( 'div' );
+    element.className = 'label';
+    element.style.backgroundColor = 'transparent';
+    element.textContent = `sat ${satellite.id}`;
+    const label = new CSS2DObject(element);
+    label.position.set(satellite.x / SCALER, satellite.z / SCALER, satellite.y / SCALER);
+    label.center.set(0, 0);
+    // label.layers.set(0)
+
+    // https://codepen.io/prisoner849/pen/oNopjyb
+    label.userData = {
+      cNormal: new THREE.Vector3(),
+      cPosition: new THREE.Vector3(),
+      mat4: new THREE.Matrix4(),
+      trackVisibility: () => { // the closer to the edge, the less opacity
+        let userData = label.userData;
+        userData.cNormal.copy(label.position).normalize().applyMatrix3(earth.normalMatrix);
+        userData.cPosition.copy(label.position).applyMatrix4(userData.mat4.multiplyMatrices(camera.matrixWorldInverse, earth.matrixWorld));
+        let d = userData.cPosition.negate().normalize().dot(userData.cNormal);
+        d = smoothstep(0.2, 0.7, d);
+        console.log(d)
+        element.style.opacity = d;
+      }
+    }
+
+    earth.add(label);
+    return label;
+  });
+}
