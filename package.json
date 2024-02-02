@@ -16,6 +16,7 @@
     "v3d": "^1.0.0"
   },
   "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.8.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
