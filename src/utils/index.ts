@@ -4,6 +4,8 @@ const scaler = 2500
 export const EARTH_RADIUS = 6378.1 / scaler; // ish
 export const GEOMETRY_DETAIL = 16
 
+export { addEarth } from './earth';
+
 export const getCoordinatesFromLatLng = function(latitude: number, longitude: number){
   const x = (EARTH_RADIUS * Math.cos(latitude) * Math.cos(longitude));
   const y = (EARTH_RADIUS * Math.cos(latitude) * Math.sin(longitude));
@@ -11,7 +13,7 @@ export const getCoordinatesFromLatLng = function(latitude: number, longitude: nu
   return { x, y, z };
 }
 
-export function getStarfield({ numStars = 500 } = {}) {
+export function getStarfield(scene: THREE.Scene, { numStars = 500 } = {}) {
   function randomSpherePoint() {
     const radius = Math.random() * 25 + 25;
     const u = Math.random();
@@ -49,6 +51,7 @@ export function getStarfield({ numStars = 500 } = {}) {
     map: new THREE.TextureLoader().load("/circle.png"),
   });
   const points = new THREE.Points(geo, mat);
+  scene.add(points);
   return points;
 }
 
@@ -56,7 +59,7 @@ export function addSatellites(group: THREE.Group, satellites: { x: number, y: nu
   const vertices: number[] = [];
   satellites.forEach(({ x, y, z}) => {
     const vector = new THREE.Vector3(x, y, z);
-    vertices.push(vector.x / scaler, vector.z / scaler, vector.y / scaler)
+    vertices.push(vector.x / scaler, vector.z / scaler, vector.y / scaler);
   });
 
   const geometry = new THREE.BufferGeometry();
@@ -75,7 +78,8 @@ export function addSatellites(group: THREE.Group, satellites: { x: number, y: nu
 }
 
 export function addUsers(group: THREE.Group, users: { x: number, y: number, z: number }[]) {
-  const vertices: number[] = [];
+  const portland = getCoordinatesFromLatLng(45.512230, -122.658722)
+  const vertices: number[] = [portland.x / scaler, portland.y / scaler, portland.z];
   users.forEach(({ x, y, z}) => {
     const vector = new THREE.Vector3(x, y, z);
     vertices.push(vector.x / scaler, vector.z / scaler, vector.y / scaler)
@@ -100,24 +104,7 @@ export const addAxesHelper = (scene: THREE.Scene) => {
   const axesHelper = new THREE.AxesHelper( 4 );
   axesHelper.layers.enableAll();
   scene.add( axesHelper );
-}
-
-export const addEarth = (group: THREE.Group) => {
-  const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS, GEOMETRY_DETAIL);
-  const loader = new THREE.TextureLoader();
-
-  const earthMaterial = new THREE.MeshPhongMaterial({
-    specular: 0x333333,
-    shininess: 5,
-    map: loader.load("/earthmap10k.jpg"),
-    specularMap: loader.load("/earthspec10k.jpg"),
-    bumpMap: loader.load("/earthbump10k.jpg"),
-    bumpScale: 0.04,
-  });
-  const earthMesh = new THREE.Mesh(geometry, earthMaterial);
-
-  group.add(earthMesh);
-  return earthMesh
+  return axesHelper;
 }
 
 export const addCityLights = (group: THREE.Group) => {
@@ -132,6 +119,13 @@ export const addCityLights = (group: THREE.Group) => {
   const lightsMesh = new THREE.Mesh(geometry, lightsMaterial);
   group.add(lightsMesh);
   return lightsMesh;
+}
+
+export const addSunlight = (scene: THREE.Scene) => {
+  const sunLight = new THREE.DirectionalLight(0xffffff, 3);
+  sunLight.position.set(1, 0, 0);
+  scene.add(sunLight)
+  return sunLight;
 }
 
 export const addClouds = (group: THREE.Group) => {
@@ -153,7 +147,6 @@ export const addClouds = (group: THREE.Group) => {
 
 export const addGlow = (group: THREE.Group) => {
   const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS, GEOMETRY_DETAIL);
-
   const fresnelMat = getFresnelMat();
   const glowMesh = new THREE.Mesh(geometry, fresnelMat);
   glowMesh.scale.setScalar(1.01);
@@ -206,7 +199,6 @@ function getFresnelMat({rimHex = 0x0088ff, facingHex = 0x000000} = {}) {
     fragmentShader: fs,
     transparent: true,
     blending: THREE.AdditiveBlending,
-    // wireframe: true,
   });
   return fresnelMat;
 }

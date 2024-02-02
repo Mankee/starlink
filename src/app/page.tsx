@@ -1,60 +1,45 @@
 "use client"; // This is a client component 👈🏽
 
 import * as THREE from 'three';
-import React, { useEffect, useState, useRef } from 'react';
+import React, {useEffect, useState, useRef, LegacyRef} from 'react';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+
 import data from '../../public/05_data.json'
 // import data from '../../public/08_data.json'
 
 // @ts-ignore
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 import {
   getStarfield,
-  getFresnelMat,
   addSatellites,
   addUsers,
   addEarth,
   addClouds,
   addGlow,
-  addAxesHelper,
-  EARTH_RADIUS,
-  addCityLights
+  addCityLights,
+  addSunlight,
+  addAxesHelper
 } from "../utils";
 
 export default function Home() {
-  const canvasRef = useRef(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    // window size
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    if (!canvasRef.current) return;
 
     const scene = new THREE.Scene();
 
     // Camera
-    const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 5;
-
-    // WebGL Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(w, h);
-
-    // @ts-ignore
-    canvasRef.current.appendChild(renderer.domElement);
-
-    new OrbitControls(camera, renderer.domElement);
-
-    const axesHelper = new THREE.AxesHelper( 3 );
-    axesHelper.layers.enableAll();
-    scene.add( axesHelper );
 
     const group = new THREE.Group();
     group.rotation.z = -23.5 * Math.PI / 180;
 
     // grouped objects
-    const earth = addEarth(group)
+    const earth = addEarth(group);
     const cityLights = addCityLights(group);
     const clouds = addClouds(group);
     const glow = addGlow(group);
@@ -62,14 +47,25 @@ export default function Home() {
     const users = addUsers(group, data.users);
 
     // scene objects
-    const stars = getStarfield({ numStars: 2000 });
+    const axes = addAxesHelper(scene)
+    const stars = getStarfield(scene, { numStars: 2000 });
+    const sunLight = addSunlight(scene);
 
     scene.add(group);
-    scene.add(stars);
 
-    const sunLight = new THREE.DirectionalLight(0xffffff, 1);
-    sunLight.position.set(1, 0, 0);
-    scene.add(sunLight);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    canvasRef.current.appendChild(renderer.domElement);
+
+    const labelRenderer = new CSS2DRenderer();
+    labelRenderer.setSize( window.innerWidth, window.innerHeight );
+    labelRenderer.domElement.style.position = 'absolute';
+    labelRenderer.domElement.style.top = '0px';
+    document.body.appendChild(labelRenderer.domElement);
+
+    const controls = new OrbitControls( camera, labelRenderer.domElement );
+    controls.minDistance = 3;
+    controls.maxDistance = 50;
 
     function animate() {
       requestAnimationFrame(animate);
@@ -81,15 +77,20 @@ export default function Home() {
       glow.rotation.y += 0.0002;
       stars.rotation.y -= 0.00002;
       renderer.render(scene, camera);
+      labelRenderer.render( scene, camera );
     }
 
     animate();
-    // @ts-ignore
-    return () => canvasRef.current.removeChild( renderer.domElement);
+    return () => {
+      if (canvasRef.current) {
+        canvasRef.current.removeChild(renderer.domElement);
+        document.body.removeChild(labelRenderer.domElement);
+      }
+    }
   }, []);
 
   return (
     // <main ref={canvasRef} className="flex min-h-screen flex-col items-center justify-between p-24"/>
-    <main ref={canvasRef}/>
+    <main ref={canvasRef}></main>
   );
 }

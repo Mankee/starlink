@@ -31,3 +31,10 @@ body {
     text-wrap: balance;
   }
 }
+
+.label {
+  color: #FFF;
+  font-family: sans-serif;
+  padding: 2px;
+  background: rgba( 0, 0, 0, .6 );
+}
