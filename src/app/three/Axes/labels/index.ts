@@ -20,11 +20,12 @@ export class StarlinkLabel {
 
     element.className = 'label';
     element.style.backgroundColor = 'transparent';
-    element.textContent = satellite.name;
+    element.textContent = `sat ${satellite.id}`;
 
     const label = new CSS2DObject(element);
-    const { x, y, z } = satellite.position;
+    const { x, y, z } = satellite.coordinates;
     label.position.set(x / SCALER, z / SCALER, y / SCALER);
+    label.center.set(0, 0);
 
     // https://codepen.io/prisoner849/pen/oNopjyb
     label.userData = {
@@ -36,7 +37,7 @@ export class StarlinkLabel {
         userData.cNormal.copy(label.position).normalize().applyMatrix3(earth.normalMatrix);
         userData.cPosition.copy(label.position).applyMatrix4(userData.mat4.multiplyMatrices(camera.matrixWorldInverse, earth.matrixWorld));
         let d = userData.cPosition.negate().normalize().dot(userData.cNormal);
-        d = smoothstep(0.4, 0.7, d);
+        d = smoothstep(0.2, 0.7, d);
         element.style.opacity = d;
       }
     }

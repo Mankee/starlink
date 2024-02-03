@@ -1,11 +1,12 @@
 "use client"; // This is a client component 👈🏽
 
 import * as THREE from 'three';
-import React, {useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useReducer, useState, useCallback } from 'react';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+import { twoline2satrec, propagate, EciVec3, Kilometer } from 'satellite.js';
 
-import data from '../../public/05_data.json'
+import sampleData from '../../public/05_data.json';
 
 // @ts-ignore
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -18,11 +19,41 @@ import {
   SunLight,
   Axes,
 } from "./three";
+import { Satellite } from '@/types';
 
 export default function Home() {
+  const [isLoading, setLoading] = useState<boolean>(true);
+  const [satellites, setSatellites] = useState<Satellite[]>([]);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
+    fetch('https://api.spacexdata.com/v4/starlink')
+      .then(response => response.json())
+      .then((entities) => {
+        const adapted: Satellite[] = [];
+        for (let i = 0; i < entities.length; i++) {
+          const tle0 = entities[i].spaceTrack.TLE_LINE0;
+          const tle1 = entities[i].spaceTrack.TLE_LINE1;
+          const tle2 = entities[i].spaceTrack.TLE_LINE2;
+          const record = twoline2satrec(tle1, tle2);
+          const { position} = propagate(record, new Date());
+          if (position) {
+            adapted.push({
+              type: 'sat',
+              position: {
+                x: position.x,
+                y: position.y,
+                z: position.z,
+              },
+              name: tle0.split(' ')[1],
+              users: [],
+            });
+          }
+        }
+        setSatellites(adapted);
+        setLoading(false);
+      });
+
     if (!canvasRef.current) return;
 
     // Camera
@@ -40,27 +71,27 @@ export default function Home() {
 
     // Grouped Entities
     const earth = new Earth(group);
-    const starlink = new Starlink(data.satellites, group).addLabelsToSatellites(earth.mesh, camera);
-    const users = new StarlinkUser(group, data.users);
-    const starField = new StarField(scene,{ numStars: 2000 });
+    const starlink = new Starlink(satellites, group).addLabelsToSatellites(earth.mesh, camera);
+    const users = new StarlinkUser(group, sampleData.users);
+    const starField = new StarField(scene, {numStars: 2000});
 
     // scene objects
     new Axes(scene)
     new SunLight(scene);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setSize(window.innerWidth, window.innerHeight);
     canvasRef.current.appendChild(renderer.domElement);
 
     const labelRenderer = new CSS2DRenderer();
-    labelRenderer.setSize( window.innerWidth, window.innerHeight );
+    labelRenderer.setSize(window.innerWidth, window.innerHeight);
     labelRenderer.domElement.style.position = 'absolute';
     labelRenderer.domElement.style.top = '0px';
     document.body.appendChild(labelRenderer.domElement);
 
-    const controls = new OrbitControls( camera, labelRenderer.domElement );
+    const controls = new OrbitControls(camera, labelRenderer.domElement);
     controls.minDistance = 3;
-    controls.maxDistance = 50;
+    controls.maxDistance = 10;
 
     function animate() {
       requestAnimationFrame(animate);
@@ -74,13 +105,14 @@ export default function Home() {
     }
 
     animate();
+
     return () => {
       if (canvasRef.current) {
         canvasRef.current.removeChild(renderer.domElement);
         document.body.removeChild(labelRenderer.domElement);
       }
     }
-  }, []);
+  }, [canvasRef, isLoading]);
 
-  return <main ref={canvasRef}></main>;
+  return isLoading ? <p>Loading...</p> : <main ref={canvasRef}></main>;
 }

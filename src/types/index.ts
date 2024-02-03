@@ -1,5 +1,5 @@
 
-export interface Coordinates {
+export interface Position {
   x: number;
   y: number;
   z: number;
@@ -7,8 +7,8 @@ export interface Coordinates {
 
 export type Entity = {
   type: string;
-  id: number;
-  coordinates: Coordinates;
+  name: string;
+  position: Position;
 }
 
 export interface User extends Entity {

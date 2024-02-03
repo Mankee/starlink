@@ -14,13 +14,13 @@ export class Starlink {
     const geometry = new THREE.BufferGeometry();
     const vertices: number[] = [];
 
-    satellites.forEach(({ coordinates }) => {
-      const { x, y, z } = coordinates;
+    satellites.forEach(({ position }) => {
+      const { x, y, z } = position;
       const vector = new THREE.Vector3(x, y, z);
       vertices.push(vector.x / SCALER, vector.z / SCALER, vector.y / SCALER);
     });
 
-    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
 
     const material = new THREE.PointsMaterial({
       size: .025,
@@ -29,7 +29,7 @@ export class Starlink {
       sizeAttenuation: true,
     });
 
-    const points =new THREE.Points(geometry, material);
+    const points = new THREE.Points(geometry, material);
     group.add(points);
 
     this.group = group;
