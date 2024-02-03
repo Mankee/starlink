@@ -43,9 +43,9 @@ export default function Home() {
           adapted.push({
             type: 'sat',
             position: {
-              x: position.x,
-              y: position.y,
-              z: position.z
+              x: position?.x,
+              y: position?.y,
+              z: position?.z
             },
             name: tle0.split(' ')[1],
             users: [],
