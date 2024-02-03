@@ -1,10 +1,9 @@
 "use client"; // This is a client component 👈🏽
 
 import * as THREE from 'three';
-import React, { useEffect, useRef, useReducer, useState, useCallback } from 'react';
-import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
-import { twoline2satrec, propagate, EciVec3, Kilometer } from 'satellite.js';
+import React, { useEffect, useRef, useState } from 'react';
+import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
+import { twoline2satrec, propagate } from 'satellite.js';
 
 import sampleData from '../../public/05_data.json';
 
@@ -20,6 +19,7 @@ import {
   Axes,
 } from "./three";
 import { Satellite } from '@/types';
+import { SATELLITE_LIMIT } from '@/app/constants';
 
 export default function Home() {
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -31,7 +31,7 @@ export default function Home() {
       .then(response => response.json())
       .then((entities) => {
         const adapted: Satellite[] = [];
-        for (let i = 0; i < entities.length; i++) {
+        for (let i = 0; adapted.length <= SATELLITE_LIMIT; i++) {
           const tle0 = entities[i].spaceTrack.TLE_LINE0;
           const tle1 = entities[i].spaceTrack.TLE_LINE1;
           const tle2 = entities[i].spaceTrack.TLE_LINE2;
