@@ -27,6 +27,7 @@ export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
+    debugger
     fetchSatellites(setLoading, setSatellites);
 
     if (!canvasRef.current) return;
@@ -87,7 +88,7 @@ export default function Home() {
         document.body.removeChild(labelRenderer.domElement);
       }
     }
-  }, [canvasRef, isLoading]);
+  }, [isLoading]);
 
   return isLoading ? <p>Loading...</p> : <main ref={canvasRef}></main>;
 }
