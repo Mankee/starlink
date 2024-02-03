@@ -3,9 +3,9 @@
 import * as THREE from 'three';
 import React, { useEffect, useRef, useState } from 'react';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
-import {twoline2satrec, propagate, Kilometer, EciVec3} from 'satellite.js';
+import { fetchSatellites } from '@/app/api';
 
-import sampleData from '../../public/05_data.json';
+import sampleData from '../../public/data.json';
 
 // @ts-ignore
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -19,7 +19,7 @@ import {
   Axes,
 } from "./three";
 import { Satellite } from '@/types';
-import {EARTH_OBLIGUITY_DEGREES, SATELLITE_LIMIT} from '@/app/constants';
+import {EARTH_OBLIGUITY_DEGREES, SATELLITE_LIMIT} from '@/constants';
 
 export default function Home() {
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -27,33 +27,7 @@ export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    fetch('https://api.spacexdata.com/v4/starlink')
-      .then(response => response.json())
-      .then((entities) => {
-        const adapted: Satellite[] = [];
-        for (let i = 0; adapted.length <= SATELLITE_LIMIT; i++) {
-          const tle0 = entities[i].spaceTrack.TLE_LINE0;
-          const tle1 = entities[i].spaceTrack.TLE_LINE1;
-          const tle2 = entities[i].spaceTrack.TLE_LINE2;
-          const record = twoline2satrec(tle1, tle2);
-          const positionAndVelocity = propagate(record, new Date());
-          const position = positionAndVelocity.position as EciVec3<Kilometer>;
-
-          adapted.push({
-            type: 'sat',
-            position: {
-              x: position?.x,
-              y: position?.y,
-              z: position?.z
-            },
-            name: tle0.split(' ')[1],
-            users: [],
-          });
-        }
-
-        setSatellites(adapted);
-        setLoading(false);
-      });
+    fetchSatellites(setLoading, setSatellites);
 
     if (!canvasRef.current) return;
 

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { DEFAULT_ROTATION, EARTH_RADIUS, GEOMETRY_DETAIL } from '@/app/constants';
+import { DEFAULT_ROTATION, EARTH_RADIUS, GEOMETRY_DETAIL } from '@/constants';
 
 function getFresnelMat({ rimHex = 0x0088ff, facingHex = 0x000000 } = {}) {
   const uniforms = {

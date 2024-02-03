@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import { SCALER } from '@/app/constants';
+import { SCALER } from '@/constants';
 import { Satellite } from '@/types';
 import { StarlinkLabel } from './labels';
 

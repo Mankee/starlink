@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { EARTH_RADIUS } from '@/app/constants';
+import { EARTH_RADIUS } from '@/constants';
 
 export class Clouds {
   mesh: THREE.Mesh

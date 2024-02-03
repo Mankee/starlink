@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import { DEFAULT_ROTATION, EARTH_RADIUS, GEOMETRY_DETAIL } from '@/app/constants';
+import { DEFAULT_ROTATION, EARTH_RADIUS, GEOMETRY_DETAIL } from '@/constants';
 import { Clouds } from './Clouds';
 import { CityLights } from './CityLights';
 import { Glow } from './Glow';

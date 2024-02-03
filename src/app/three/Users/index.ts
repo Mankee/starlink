@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { DEFAULT_ROTATION, EARTH_RADIUS, SCALER } from '@/app/constants';
+import { DEFAULT_ROTATION, EARTH_RADIUS, SCALER } from '@/constants';
 import { Position, User } from '@/types';
 
 const getCoordinatesFromLatLng = (latitude: number, longitude: number) => {

@@ -51,8 +51,7 @@ export class StarField {
   }
 
   animate() {
-    this.points.rotation.y -= 0.00016;
-
+    this.points.rotation.y -= 0.00004;
   }
 }
 
