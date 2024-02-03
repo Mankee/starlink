@@ -37,7 +37,6 @@ export default function Home() {
           const tle2 = entities[i].spaceTrack.TLE_LINE2;
           const record = twoline2satrec(tle1, tle2);
           const positionAndVelocity = propagate(record, new Date());
-
           const position = positionAndVelocity.position as EciVec3<Kilometer>;
 
           adapted.push({
