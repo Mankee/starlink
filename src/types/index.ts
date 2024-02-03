@@ -1,3 +1,4 @@
+import {EciVec3, Kilometer} from 'satellite.js';
 
 export interface Position {
   x: number;

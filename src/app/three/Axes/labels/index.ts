@@ -20,10 +20,10 @@ export class StarlinkLabel {
 
     element.className = 'label';
     element.style.backgroundColor = 'transparent';
-    element.textContent = `sat ${satellite.id}`;
+    element.textContent = `sat ${satellite.name}`;
 
     const label = new CSS2DObject(element);
-    const { x, y, z } = satellite.coordinates;
+    const { x, y, z } = satellite.position;
     label.position.set(x / SCALER, z / SCALER, y / SCALER);
     label.center.set(0, 0);
 
