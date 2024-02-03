@@ -1,30 +1,23 @@
 "use client"; // This is a client component 👈🏽
 
 import * as THREE from 'three';
-import React, {useEffect, useState, useRef, LegacyRef} from 'react';
+import React, {useEffect, useRef } from 'react';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 import data from '../../public/05_data.json'
-// import data from '../../public/08_data.json'
 
 // @ts-ignore
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 import {
-  addStarField,
-  addSatellites,
-  addUsers,
-  addEarth,
-  addClouds,
-  addGlow,
-  addCityLights,
-  addSunlight,
-  addAxesHelper,
-  EARTH_RADIUS,
-  SCALER,
-  addPointLabels
-} from "../utils";
+  StarField,
+  Starlink,
+  StarlinkUser,
+  Earth,
+  SunLight,
+  Axes,
+} from "./three";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -32,31 +25,28 @@ export default function Home() {
   useEffect(() => {
     if (!canvasRef.current) return;
 
-    const scene = new THREE.Scene();
-    scene.layers.enableAll()
-
     // Camera
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 5;
 
+    // Planet Group
     const group = new THREE.Group();
     group.rotation.z = -23.5 * Math.PI / 180;
 
-    // grouped objects
-    const earth = addEarth(group);
-    const cityLights = addCityLights(group);
-    const clouds = addClouds(group);
-    const glow = addGlow(group);
-    const satellites = addSatellites(group, data.satellites);
-    const users = addUsers(group, data.users);
-    const satelliteLabels = addPointLabels(earth, camera, data.satellites)
+    // Scene
+    const scene = new THREE.Scene();
+    scene.layers.enableAll()
+    scene.add(group);
+
+    // Grouped Entities
+    const earth = new Earth(group);
+    const starlink = new Starlink(data.satellites, group).addLabelsToSatellites(earth.mesh, camera);
+    const users = new StarlinkUser(group, data.users);
+    const starField = new StarField(scene,{ numStars: 2000 });
 
     // scene objects
-    const axes = addAxesHelper(scene)
-    const stars = addStarField(scene, { numStars: 2000 });
-    const sunLight = addSunlight(scene);
-
-    scene.add(group);
+    new Axes(scene)
+    new SunLight(scene);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -74,16 +64,13 @@ export default function Home() {
 
     function animate() {
       requestAnimationFrame(animate);
-      satelliteLabels.forEach((label: any) => label.userData.trackVisibility());
-      earth.rotation.y += 0.0002;
-      satellites.rotation.y += 0.0002;
-      users.rotation.y += 0.0002;
-      cityLights.rotation.y += 0.0002;
-      clouds.rotation.y += 0.00023;
-      glow.rotation.y += 0.0002;
-      stars.rotation.y -= 0.00002;
       renderer.render(scene, camera);
       labelRenderer.render(scene, camera);
+
+      earth.animate();
+      starlink.animate();
+      users.animate();
+      starField.animate();
     }
 
     animate();
@@ -95,8 +82,5 @@ export default function Home() {
     }
   }, []);
 
-  return (
-    // <main ref={canvasRef} className="flex min-h-screen flex-col items-center justify-between p-24"/>
-    <main ref={canvasRef}></main>
-  );
+  return <main ref={canvasRef}></main>;
 }
