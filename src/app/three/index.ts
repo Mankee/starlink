@@ -1,6 +1,7 @@
 export { Earth } from './Earth';
-export { Starlink } from './Satellites';
-export { StarlinkUser } from './Users';
+export { StarlinkSatellites } from './Satellites';
+export { StarlinkUsers } from './Users';
 export { Axes } from './Axes';
 export { SunLight } from './SunLight';
 export { StarField } from './StarField';
+export { Connections } from './Connections';

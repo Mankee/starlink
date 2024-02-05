@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { DEFAULT_ROTATION, EARTH_RADIUS, SCALER } from '@/constants';
-import { Position, User } from '@/types';
+import {Position, User} from '@/types';
 
 const getCoordinatesFromLatLng = (latitude: number, longitude: number) => {
   const x = (EARTH_RADIUS * Math.cos(latitude) * Math.cos(longitude));
@@ -9,13 +9,13 @@ const getCoordinatesFromLatLng = (latitude: number, longitude: number) => {
   return { x, y, z } as Position;
 }
 
-export class StarlinkUser {
+export class StarlinkUsers {
   points: THREE.Points;
+  users: User[];
+  group: THREE.Group;
 
   constructor(group: THREE.Group, users: User[]) {
-    // just testing to see if this works
-    const portlandOR = getCoordinatesFromLatLng(45.512230, -122.658722)
-    const vertices: number[] = [ portlandOR.x / SCALER, portlandOR.y / SCALER, portlandOR.z / SCALER ];
+    const vertices: number[] = [];
 
     users.forEach(({ position }) => {
       const { x, y, z } = position;
@@ -36,10 +36,14 @@ export class StarlinkUser {
     const points = new THREE.Points(geometry, material);
     group.add(points);
 
-    this.points = points
+    this.points = points;
+    this.group = group;
+    this.users = [];
   }
 
   animate() {
-    this.points.rotation.y += DEFAULT_ROTATION;
+    this.points.geometry.rotateY(DEFAULT_ROTATION)
+    // this.points.rotation.y += DEFAULT_ROTATION;
+    // this.points.updateMatrixWorld(true);
   }
 }

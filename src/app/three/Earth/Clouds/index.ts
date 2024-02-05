@@ -1,10 +1,10 @@
 import * as THREE from 'three';
-import { EARTH_RADIUS } from '@/constants';
+import {EARTH_RADIUS, SCALER} from '@/constants';
 
 export class Clouds {
   mesh: THREE.Mesh
   constructor(group: THREE.Group) {
-    const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS, 12);
+    const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS / SCALER, 12);
     const loader = new THREE.TextureLoader();
 
     const cloudsMat = new THREE.MeshStandardMaterial({
@@ -13,6 +13,7 @@ export class Clouds {
       blending: THREE.AdditiveBlending,
       opacity: 0.25,
       alphaMap: loader.load('/earthcloudmaptrans.jpg'),
+      // visible: false
     });
 
     const mesh = new THREE.Mesh(geometry, cloudsMat);

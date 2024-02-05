@@ -3,7 +3,14 @@ import { SATELLITE_LIMIT } from '@/constants';
 import { EciVec3, Kilometer, propagate, twoline2satrec } from 'satellite.js';
 import React from 'react';
 
+import data from '../../../public/data.json';
+
 export const fetchSatellites = async (setLoading: React.Dispatch<React.SetStateAction<boolean>>, setSatellites: React.Dispatch<React.SetStateAction<Satellite[]>>) => {
+  if (data) {
+    setSatellites(data.satellites);
+    setLoading(false);
+  }
+
   const entities = await fetch('https://api.spacexdata.com/v4/starlink').then(response => response.json())
   const adapted: Satellite[] = [];
 

@@ -10,14 +10,12 @@ export const getBeamAngleDegrees = (user: User, satellite: Satellite | Entity) =
   const h = Math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2) + ((z1 - z2) ** 2));
 
   if (h === 0) {
-    debugger
     console.log(`returning 0 degrees for satellite ${satellite.name} and user ${user.name} the calculated distance between them is 0`)
     return 0;
   }
 
   const radians = Math.acos(Math.abs(x1 - x2) / h);
   const degrees = (radians * 180) / Math.PI;
-  console.log(degrees);
   return degrees;
   // The distance between the user and satellite on the z axis
   // const altitudeDistance = Math.abs(550 - user.altitude);

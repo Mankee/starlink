@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import { DEFAULT_ROTATION, EARTH_RADIUS, GEOMETRY_DETAIL } from '@/constants';
+import {DEFAULT_ROTATION, EARTH_RADIUS, GEOMETRY_DETAIL, SCALER} from '@/constants';
 import { Clouds } from './Clouds';
 import { CityLights } from './CityLights';
 import { Glow } from './Glow';
@@ -12,7 +12,7 @@ export class Earth {
   glow: Glow;
 
   constructor(group: THREE.Group) {
-    const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS, GEOMETRY_DETAIL);
+    const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS / SCALER, GEOMETRY_DETAIL);
     const loader = new THREE.TextureLoader();
 
     const material = new THREE.MeshPhongMaterial({
@@ -20,6 +20,7 @@ export class Earth {
       specularMap: loader.load("/earthspec10k.jpg"),
       bumpMap: loader.load("/earthbump10k.jpg"),
       bumpScale: 0.04,
+      // visible: false
     });
 
     const earth = new THREE.Mesh(geometry, material)
@@ -36,7 +37,8 @@ export class Earth {
   }
 
   animate() {
-    this.mesh.rotation.y += DEFAULT_ROTATION;
+    this.mesh.rotateY(DEFAULT_ROTATION)
+    // this.mesh.rotation.y += DEFAULT_ROTATION;
     this.clouds.animate();
     this.cityLights.animate();
     this.glow.animate();

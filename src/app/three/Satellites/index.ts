@@ -1,16 +1,16 @@
 import * as THREE from 'three';
 
-import { SCALER } from '@/constants';
+import {DEFAULT_ROTATION, SCALER} from '@/constants';
 import { Satellite } from '@/types';
 import { StarlinkLabel } from './labels';
 
-export class Starlink {
+export class StarlinkSatellites {
   points: THREE.Points;
   satellites: Satellite[];
   group: THREE.Group;
   labels: StarlinkLabel[] | undefined;
 
-  constructor(satellites: Satellite[], group: THREE.Group) {
+  constructor(group: THREE.Group, satellites: Satellite[]) {
     const geometry = new THREE.BufferGeometry();
     const vertices: number[] = [];
 
@@ -37,13 +37,19 @@ export class Starlink {
     this.points = points;
   }
 
-  addLabelsToSatellites(earth: THREE.Mesh, camera: THREE.Camera) {
-    this.labels = this.satellites.map((satellite) => new StarlinkLabel(earth, camera, satellite, this.group));
+  addLabels(earth: THREE.Mesh, camera: THREE.Camera) {
+    this.labels = this.satellites.map((satellite) => new StarlinkLabel(earth, this.points, camera, satellite, this.group));
     return this;
   }
 
+  getPosition() {
+    return this.points.position;
+  }
+
   animate() {
-    if (this.labels) this.labels.forEach((label) => label.animate());
-    this.points.rotation.y += 0.0002;
+    this.points.geometry.rotateY(DEFAULT_ROTATION * 2)
+    // this.points.rotation.y += 0.0002;
+    // this.points.updateMatrixWorld(true);
+    // if (this.labels) this.labels.forEach((label) => label.animate());
   }
 }

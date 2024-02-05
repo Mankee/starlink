@@ -4,22 +4,23 @@ import * as THREE from 'three';
 import React, { useEffect, useRef, useState } from 'react';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 import { fetchSatellites } from '@/app/api';
-
-import sampleData from '../../public/data.json';
+import data from '../../public/data.json';
 
 // @ts-ignore
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 import {
   StarField,
-  Starlink,
-  StarlinkUser,
+  StarlinkSatellites,
+  StarlinkUsers,
   Earth,
   SunLight,
   Axes,
+  Connections
 } from "./three";
-import { Satellite } from '@/types';
-import {EARTH_OBLIGUITY_DEGREES, SATELLITE_LIMIT} from '@/constants';
+
+import { Satellite, User } from '@/types';
+import { EARTH_OBLIGUITY_DEGREES, EARTH_RADIUS, SCALER } from '@/constants';
 
 export default function Home() {
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -27,7 +28,6 @@ export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    debugger
     fetchSatellites(setLoading, setSatellites);
 
     if (!canvasRef.current) return;
@@ -47,9 +47,10 @@ export default function Home() {
 
     // Grouped Entities
     const earth = new Earth(group);
-    const starlink = new Starlink(satellites, group).addLabelsToSatellites(earth.mesh, camera);
-    const users = new StarlinkUser(group, sampleData.users);
-    const starField = new StarField(scene, {numStars: 2000});
+    const starlinkUsers = new StarlinkUsers(group, data.users)
+    const starlinkSatellites = new StarlinkSatellites(group, satellites);
+    const connections = new Connections(group, starlinkSatellites, starlinkUsers);
+    const starField = new StarField(scene, { numStars: 2000 });
 
     // scene objects
     new Axes(scene)
@@ -66,7 +67,7 @@ export default function Home() {
     document.body.appendChild(labelRenderer.domElement);
 
     const controls = new OrbitControls(camera, labelRenderer.domElement);
-    controls.minDistance = 3;
+    controls.minDistance = 2.9;
     controls.maxDistance = 10;
 
     function animate() {
@@ -75,8 +76,9 @@ export default function Home() {
       labelRenderer.render(scene, camera);
 
       earth.animate();
-      starlink.animate();
-      users.animate();
+      starlinkSatellites.animate();
+      starlinkUsers.animate();
+      connections.animate()
       starField.animate();
     }
 

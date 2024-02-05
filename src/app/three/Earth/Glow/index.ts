@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { DEFAULT_ROTATION, EARTH_RADIUS, GEOMETRY_DETAIL } from '@/constants';
+import {DEFAULT_ROTATION, EARTH_RADIUS, GEOMETRY_DETAIL, SCALER} from '@/constants';
 
 function getFresnelMat({ rimHex = 0x0088ff, facingHex = 0x000000 } = {}) {
   const uniforms = {
@@ -46,6 +46,7 @@ function getFresnelMat({ rimHex = 0x0088ff, facingHex = 0x000000 } = {}) {
     fragmentShader: fs,
     transparent: true,
     blending: THREE.AdditiveBlending,
+    // visible: false
   });
   return fresnelMat;
 }
@@ -54,7 +55,7 @@ export class Glow {
   mesh: THREE.Mesh;
 
   constructor(group: THREE.Group) {
-    const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS, GEOMETRY_DETAIL);
+    const geometry = new THREE.IcosahedronGeometry(EARTH_RADIUS / SCALER, GEOMETRY_DETAIL);
     const fresnelMat = getFresnelMat();
 
     const mesh = new THREE.Mesh(geometry, fresnelMat);
