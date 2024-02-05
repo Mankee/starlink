@@ -16,9 +16,7 @@ export class StarlinkSatellites {
     const vertices: number[] = [];
 
     satellites.forEach(({ position }) => {
-      const { x, y, z } = position;
-      const vector = new THREE.Vector3(x, y, z);
-      vertices.push(vector.x / SCALER, vector.z / SCALER, vector.y / SCALER);
+      vertices.push(position.x / SCALER, position.z / SCALER, position.y / SCALER);
     });
 
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));

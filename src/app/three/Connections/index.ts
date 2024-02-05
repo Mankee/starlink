@@ -15,7 +15,7 @@ export class Connections {
     const satelliteVertices = [];
     const satellitesPosition = satellites.points.geometry.getAttribute( 'position' );
 
-    for (let i = 0; i < satellitesPosition.count / satellitesPosition.itemSize; i++) {
+    for (let i = 0; i < satellitesPosition.count; i++) {
       const vertex = new THREE.Vector3(
         satellitesPosition.getX(i) * SCALER,
         satellitesPosition.getZ(i) * SCALER,
@@ -28,7 +28,7 @@ export class Connections {
     const userVertices: THREE.Vector3[] = [];
     const usersPosition = users.points.geometry.getAttribute( 'position' );
 
-    for ( let i = 0; i < usersPosition.count / usersPosition.itemSize; i++ ) {
+    for ( let i = 0; i < usersPosition.count; i++ ) {
       const vertex = new THREE.Vector3(
         usersPosition.getX(i) * SCALER,
         usersPosition.getZ(i) * SCALER,
@@ -110,7 +110,7 @@ export class Connections {
     // users.points.rotateY(DEFAULT_ROTATION)
     const satellitesPosition = this.satellites.points.geometry.getAttribute( 'position' );
 
-    for ( let i = 0; i < satellitesPosition.count / satellitesPosition.itemSize; i++ ) {
+    for ( let i = 0; i < satellitesPosition.count; i++ ) {
       const vertex = new THREE.Vector3(
         satellitesPosition.getX(i) * SCALER,
         satellitesPosition.getZ(i) * SCALER,
@@ -123,7 +123,7 @@ export class Connections {
     const userVertices: THREE.Vector3[] = [];
     const usersPosition = this.users.points.geometry.getAttribute( 'position' );
 
-    for ( let i = 0; i < usersPosition.count / usersPosition.itemSize; i++ ) {
+    for ( let i = 0; i < usersPosition.count; i++ ) {
       const vertex = new THREE.Vector3(
         usersPosition.getX(i) * SCALER,
         usersPosition.getZ(i) * SCALER,

@@ -23,7 +23,8 @@ export class Clouds {
   }
 
   animate() {
-    this.mesh.rotation.y += 0.00023;
+    this.mesh.rotateY(0.00023)
+    // this.mesh.rotation.y += 0.00023;
   }
 }
 

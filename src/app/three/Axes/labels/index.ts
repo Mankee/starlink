@@ -32,7 +32,7 @@ export class StarlinkLabel {
   }
 
   animate() {
-    this.label.rotation.y += 0.0002;
-    this.label.userData.trackVisibility();
+    // this.label.rotation.y += 0.0002;
+    // this.label.userData.trackVisibility();
   }
 }

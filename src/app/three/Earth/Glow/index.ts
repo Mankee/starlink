@@ -65,7 +65,8 @@ export class Glow {
   }
 
   animate() {
-    this.mesh.rotation.y += DEFAULT_ROTATION;
+    this.mesh.rotateY(DEFAULT_ROTATION)
+    // this.mesh.rotation.y += DEFAULT_ROTATION;
   }
 }
 
