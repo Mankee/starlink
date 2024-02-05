@@ -97,8 +97,12 @@ export class Connections {
   }
 
   animate() {
-    this.connections.forEach(connection => this.group.remove(connection))
-    // console.log(`connections count ${this.connections.length}`)
+    // memory management of all connections
+    this.connections.forEach(connection => {
+      connection.geometry.dispose();
+      this.group.remove(connection)
+    });
+
     const connections: THREE.Line<THREE.BufferGeometry<THREE.NormalBufferAttributes>>[] = [];
 
     const satelliteVertices = [];
@@ -163,7 +167,10 @@ export class Connections {
         ];
         const lineGeometry = new THREE.BufferGeometry();
         lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-        const lineMaterial = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+        const lineMaterial = new THREE.LineBasicMaterial({
+          color: 0x0000ff,
+          opacity: .5
+        });
         const connection = new THREE.Line(lineGeometry, lineMaterial);
 
         // distance between the user and the satellite xyz space

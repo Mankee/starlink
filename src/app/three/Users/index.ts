@@ -43,7 +43,5 @@ export class StarlinkUsers {
 
   animate() {
     this.points.geometry.rotateY(DEFAULT_ROTATION)
-    // this.points.rotation.y += DEFAULT_ROTATION;
-    // this.points.updateMatrixWorld(true);
   }
 }

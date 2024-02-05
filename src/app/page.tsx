@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 import { fetchSatellites } from '@/app/api';
 import data from '../../public/data.json';
+import Stats from 'stats.js';
 
 // @ts-ignore
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -45,10 +46,15 @@ export default function Home() {
     scene.layers.enableAll()
     scene.add(group);
 
+    // Stats
+    const stats = new Stats();
+    stats.showPanel( 2 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+    document.body.appendChild(stats.dom);
+
     // Grouped Entities
     const earth = new Earth(group);
     const starlinkUsers = new StarlinkUsers(group, data.users)
-    const starlinkSatellites = new StarlinkSatellites(group, satellites);
+    const starlinkSatellites = new StarlinkSatellites(earth, camera, group, satellites)
     const connections = new Connections(group, starlinkSatellites, starlinkUsers);
     const starField = new StarField(scene, { numStars: 2000 });
 
@@ -64,22 +70,24 @@ export default function Home() {
     labelRenderer.setSize(window.innerWidth, window.innerHeight);
     labelRenderer.domElement.style.position = 'absolute';
     labelRenderer.domElement.style.top = '0px';
-    document.body.appendChild(labelRenderer.domElement);
+    canvasRef.current.appendChild(labelRenderer.domElement);
 
     const controls = new OrbitControls(camera, labelRenderer.domElement);
     controls.minDistance = 2.9;
     controls.maxDistance = 10;
 
-    function animate() {
+
+    const animate = () => {
+      stats.begin();
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
       labelRenderer.render(scene, camera);
-
       earth.animate();
       starlinkSatellites.animate();
       starlinkUsers.animate();
       connections.animate()
       starField.animate();
+      stats.end();
     }
 
     animate();
@@ -88,6 +96,7 @@ export default function Home() {
       if (canvasRef.current) {
         canvasRef.current.removeChild(renderer.domElement);
         document.body.removeChild(labelRenderer.domElement);
+        document.body.removeChild(stats.dom);
       }
     }
   }, [isLoading]);

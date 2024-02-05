@@ -20,7 +20,6 @@ export class Earth {
       specularMap: loader.load("/earthspec10k.jpg"),
       bumpMap: loader.load("/earthbump10k.jpg"),
       bumpScale: 0.04,
-      // visible: false
     });
 
     const earth = new THREE.Mesh(geometry, material)
@@ -38,7 +37,6 @@ export class Earth {
 
   animate() {
     this.mesh.rotateY(DEFAULT_ROTATION)
-    // this.mesh.rotation.y += DEFAULT_ROTATION;
     this.clouds.animate();
     this.cityLights.animate();
     this.glow.animate();

@@ -13,7 +13,6 @@ export class Clouds {
       blending: THREE.AdditiveBlending,
       opacity: 0.25,
       alphaMap: loader.load('/earthcloudmaptrans.jpg'),
-      // visible: false
     });
 
     const mesh = new THREE.Mesh(geometry, cloudsMat);
