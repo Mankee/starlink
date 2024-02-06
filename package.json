@@ -2,13 +2,13 @@
   "name": "starlink",
   "version": "1.0.0",
   "private": true,
+  "type": "commonjs",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "parse": "node -r ts-node/register src/scripts/index.ts",
-    "parse:debug": "node --inspect-brk -r ts-node/register index.ts"
+    "optimize": "node inspect src/utils"
   },
   "dependencies": {
     "next": "14.1.0",

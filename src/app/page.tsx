@@ -3,8 +3,7 @@
 import * as THREE from 'three';
 import React, { useEffect, useRef, useState } from 'react';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
-import { fetchSatellites } from '@/app/api';
-import data from '../../public/data.json';
+import { users } from '../../public/data.json';
 import Stats from 'stats.js';
 
 // @ts-ignore
@@ -20,8 +19,9 @@ import {
   Connections
 } from "./three";
 
+import { fetchSatellites } from '@/app/api';
 import { Satellite, User } from '@/types';
-import { EARTH_OBLIGUITY_DEGREES, EARTH_RADIUS, SCALER } from '@/constants';
+import { EARTH_OBLIGUITY_DEGREES } from '@/constants';
 
 export default function Home() {
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -53,7 +53,7 @@ export default function Home() {
 
     // Grouped Entities
     const earth = new Earth(group);
-    const starlinkUsers = new StarlinkUsers(group, data.users)
+    const starlinkUsers = new StarlinkUsers(group, users)
     const starlinkSatellites = new StarlinkSatellites(earth, camera, group, satellites)
     const connections = new Connections(group, starlinkSatellites, starlinkUsers);
     const starField = new StarField(scene, { numStars: 2000 });
