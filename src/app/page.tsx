@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import React, { useEffect, useRef, useState } from 'react';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
-import { users } from '../../public/data.json';
+import data from '../../public/data.json';
 import Stats from 'stats.js';
 
 // @ts-ignore
@@ -53,6 +53,10 @@ export default function Home() {
 
     // Grouped Entities
     const earth = new Earth(group);
+
+    // limit the number of users for now
+    const users = data.users.splice(0, 100);
+
     const starlinkUsers = new StarlinkUsers(group, users)
     const starlinkSatellites = new StarlinkSatellites(earth, camera, group, satellites)
     const connections = new Connections(group, starlinkSatellites, starlinkUsers);

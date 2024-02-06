@@ -6,7 +6,7 @@ export interface Position {
 
 export type Entity = {
   type: string;
-  name: string;
+  id: string;
   position: Position;
 }
 

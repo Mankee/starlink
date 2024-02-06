@@ -1,13 +1,3 @@
-// import data from '../../public/data.json';
-const data = require('../../public/data.json');
-const optimize = require("next/dist/server/optimize-amp");
-
-const SCALER = 2500
-const EARTH_RADIUS = 6378.1; // ish
-const GEOMETRY_DETAIL = 16;
-const DEFAULT_ROTATION = 0.0002;
-const SATELLITE_LIMIT = 500;
-const EARTH_OBLIGUITY_DEGREES = 23.44;
 
 const getBeamAngleDegrees = (user, satellite) => {
   // x^2 + y^2 = l^2
@@ -77,70 +67,27 @@ function createNewVector(userVertex, satelliteVertex) {
   };
 }
 
-const main = (satellites, users) => {
-  const allConnections = [];
-  const userConnections = {};
-  const satelliteConnections = {};
-
-  satellites.forEach((satellite, satelliteId) => {
-    const height = (Math.sqrt((satellite.position.x ** 2) + (satellite.position.z ** 2) + (satellite.position.y ** 2)) - EARTH_RADIUS);
-    const radius = Math.abs(Math.tan(45) * height);
-    users.forEach((user, userId) => {
-      // distance between the user and the satellite xyz space
-      const distance = Math.sqrt(((satellite.position.x - user.position.x) ** 2) + ((satellite.position.y - user.position.y) ** 2) + ((satellite.position.z - user.position.z) ** 2))
-
-      // distance between the user and the satellite xy space
-      const length = Math.sqrt((distance ** 2) - (height ** 2));
-
-      if (length <= radius) {
-        user.connectionCount += 1;
-        satellite.users.push(user)
-        user.satellites.push(satellite)
-      }
-    });
-  });
-
-  // constraint #1 - no two connection vectors for the same satellite can be with 10 degrees of each other
-  // checks angles between each connection pair vector (a user ground target and a star link satellite)
-  for (let i = 0; i < satellites.length; i++) {
-    const satellite = satellites[i];
-    if (satellite.users.length) {
-      for (let j = 0; j < satellite.users.length; j++) {
-        const userA = satellite.users[j];
-        const vectorA = createNewVector(satellite.position, userA.position);
-        for (let k = j + 1; k < satellite.users.length; k++) {
-          const userB = satellite.users[k];
-          const vectorB = createNewVector(satellite.position, userB.position);
-          const angle = angleBetweenVectors(vectorA, vectorB);
-
-          console.log(`The angle between the vectors is ${angle} degrees.`);
-
-          if (angle < 10) {
-            const userId = parseInt(satellite.users[j].name, 10) - 1;
-            if (userId === 0) {
-              // debugger
-            }
-            if (userA.connectionCount > userB.connectionCount) {
-              users[userId].connectionCount -= 1;
-              satellite.users.splice(j, 1)
-            } else {
-              const userId = parseInt(satellite.users[k].name, 10) - 1;
-              users[userId].connectionCount -= 1;
-              satellite.users.splice(k, 1)
-            }
-          }
-        }
-      }
-    }
-  }
-
-  console.log(`user count: ${users.length}`)
-  const remaining = users.filter((user) => {
-    if (user.connectionCount <= 0) return true
-  });
-
-  console.log(remaining)
-  debugger
+const radius = (height) => {
+  return Math.abs(Math.tan(45) * height);
 }
 
-main(data.satellites, data.users)
+// get the distance between two objects in 3D space
+const distance = (a, b) => {
+  return Math.sqrt(((a.x - b.x) ** 2) + ((a.y - b.y) ** 2) + ((a.z - b.z) ** 2))
+}
+
+const length = (distance, height) => {
+  return Math.sqrt((distance ** 2) - (height ** 2));
+}
+
+module.exports = {
+  getBeamAngleDegrees,
+  dotProduct,
+  magnitude,
+  radiansToDegrees,
+  angleBetweenVectors,
+  createNewVector,
+  radius,
+  distance,
+  length
+}
