@@ -8,7 +8,7 @@ export class CityLights {
     const loader = new THREE.TextureLoader();
 
     const lightsMaterial = new THREE.MeshBasicMaterial({
-      map: loader.load("/earthlights10k.jpg"),
+      map: loader.load("/earthlights4k.jpg"),
       blending: THREE.AdditiveBlending,
       opacity: .2,
     });

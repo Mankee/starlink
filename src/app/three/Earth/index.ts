@@ -16,9 +16,9 @@ export class Earth {
     const loader = new THREE.TextureLoader();
 
     const material = new THREE.MeshPhongMaterial({
-      map: loader.load("/earthmap10k.jpg"),
-      specularMap: loader.load("/earthspec10k.jpg"),
-      bumpMap: loader.load("/earthbump10k.jpg"),
+      map: loader.load("/earthmap4k.jpg"),
+      specularMap: loader.load("/earthspec4k.jpg"),
+      bumpMap: loader.load("/earthbump4k.jpg"),
       bumpScale: 0.04,
     });
 
